@@ -1,0 +1,29 @@
+{
+  "private": true,
+  "name": "tdd-example",
+  "version": "1.0.0",
+  "description": "Sample tdd workflow",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server/start.js",
+    "test": "karma start karma.conf.js",
+    "test-server": "mocha server/test || true"
+  },
+  "author": "Ryan Navarroza",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^2.10.2",
+    "expect.js": "^0.3.1",
+    "express": "^4.13.3",
+    "lodash": "^3.10.1",
+    "mocha": "^2.3.3",
+    "mysql": "^2.9.0",
+    "node-require-directory": "^1.0.2",
+    "node-uuid": "^1.4.3",
+    "q": "^1.4.1",
+    "require-directory": "^2.1.1"
+  },
+  "devDependencies": {
+    "mocha-clean": "^0.4.0"
+  }
+}

@@ -1,0 +1,2 @@
+--require mocha-clean
+--ui bdd
