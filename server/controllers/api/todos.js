@@ -1,7 +1,7 @@
 var mysql = require('../../database/mysql.js');
 var uuid = require('node-uuid');
 var listRepository = require('../../repositories/list.js');
-var Todo = require('../../collections/Todo.js');
+var Todo = require('../../domain/Todo.js');
 
 var TodoController = {
 

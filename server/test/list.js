@@ -19,6 +19,22 @@ var spyReset = function () {
 
 
 describe('List', function() {
+  var list;
+
+  before(function () {
+    spyReset();
+    req.body = {name: 'foo'};
+    listController.create(req, res);
+    return promise.then(function (response) {
+      list = response;
+      expect(response).to.be.ok();
+      expect(response.name).to.be(req.body.name);
+    });
+  });
+
+  beforeEach(function () {
+    spyReset();
+  });
 
   after(function () {
     return Promise.all([
@@ -36,31 +52,20 @@ describe('List', function() {
   // });
   
   describe('#create', function () {
-    var list;
-
-    before(function () {
-      spyReset();
-      req.body = {name: 'foo'};
-      listController.create(req, res);
-      return promise.then(function (response) {
-        list = response;
-        expect(response).to.be.ok();
-        expect(response.name).to.be(req.body.name);
-      });
-    });
 
     it('should succeed with no error', function () {
-        return listRepository.findOneByName(req.body.name)
-          .then(function (result) {
-            expect(result).be.eql(list);
-          });
+      req.body = {name: 'foo'};
+      return listRepository.findOneByName(req.body.name)
+        .then(function (result) {
+          expect(result).to.eql(list);
+        });
     });
 
     it('should throw an error on duplicate name', function (done) {
       spyReset();
       req.body = {name: 'foo'};
       listController.create(req, res);
-      process.on("unhandledRejection", function(reason, promise) {
+      process.once("unhandledRejection", function(reason, promise) {
         done(); 
       });
     });
@@ -74,27 +79,63 @@ describe('List', function() {
   });
 
 
-  // it('should mark a list as completed', function () {
-  //
-  //   return listRepository
-  //     .findOneByName('foo')
-  //     .then(function(result) {
-  //       req.params = {uuid: result.uuid};
-  //       listController.markAsCompleted(req, res);
-  //
-  //       return promise
-  //         .then(function(response) {
-  //           expect(response.success).to.be.ok();
-  //
-  //           return mysql
-  //             .query('SELECT * from lists WHERE uuid=?', req.params.uuid)
-  //             .then(function (rows) {
-  //               expect(rows).to.not.be.empty();
-  //               expect(rows[0].completed).to.be(1);
-  //           });
-  //         });
-  //     });
-  // });
+  describe('#update', function () {
+
+    it('should mark a list as completed', function () {
+      req.body = {uuid: list.uuid};
+      listController.markAsCompleted(req, res);
+
+      return promise
+        .then(function(response) {
+          expect(response.uuid).to.be(list.uuid);
+          expect(response.completed).to.be(1);
+
+          return listRepository
+            .findOneByName(list.name)
+            .then(function (listResult) {
+              expect(listResult).to.eql(response);
+            });
+        });
+    });
+    
+    it('should mark a list as incomplete', function () {
+      req.body = {uuid: list.uuid};
+      listController.markAsIncomplete(req, res);
+
+      return promise
+        .then(function(response) {
+          expect(response.uuid).to.be(list.uuid);
+          expect(response.completed).to.be(0);
+
+          return listRepository
+            .findOneByName(list.name)
+            .then(function (listResult) {
+              expect(listResult).to.eql(response);
+            });
+        });
+    });
+
+    describe('#delete', function () {
+      it('should remove a list', function () {
+        req.body = {uuid: list.uuid};
+        listController.remove(req, res);
+
+        return promise
+          .then(function(response) {
+            expect(response.uuid).to.be(list.uuid);
+
+            return listRepository
+              .findOneByName(list.name)
+              .catch(function (error) {
+                expect(error).to.be.ok();
+              });
+          });
+      });
+    });
+
+  });
+
+
   //
   // it('should add a todo to a list', function () {
   //   return listRepository

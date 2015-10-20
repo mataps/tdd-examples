@@ -1,15 +1,15 @@
 var mysql = require('../../database/mysql.js');
 var uuid = require('node-uuid');
 var listRepository = require('../../repositories/list.js');
-var List = require('../../collections/List.js');
+var List = require('../../domain/List.js');
 
   
-var TodoController = {
+var ListController = {
 
   create: function (req, res) {
     var list = new List(uuid.v4(), req.body.name);
     listRepository
-      .save(list)
+      .insert(list)
       .then(function (result) {
         res.send(result);
       });
@@ -25,15 +25,38 @@ var TodoController = {
 
   markAsCompleted: function (req, res) {
     listRepository
-      .findByUUID(req.params.uuid)
+      .findByUUID(req.body.uuid)
       .then(function (list) {
         list.markAsCompleted();
         listRepository
-          .save(list)
-          .then(function () {
-            res.send({
-              success: true
-            });
+          .update(list)
+          .then(function (result) {
+            res.send(result);
+          });
+      });
+  },
+
+  markAsIncomplete: function (req, res) {
+    listRepository
+      .findByUUID(req.body.uuid)
+      .then(function (list) {
+        list.markAsIncomplete();
+        listRepository
+          .update(list)
+          .then(function (result) {
+            res.send(result);
+          });
+      });
+  },
+
+  remove: function (req, res) {
+    listRepository
+      .findByUUID(req.body.uuid)
+      .then(function (list) {
+        listRepository
+          .remove(list)
+          .then(function (result) {
+            res.send(result);
           });
       });
   }
@@ -41,4 +64,4 @@ var TodoController = {
 };
 
 
-module.exports = TodoController;
+module.exports = ListController;
