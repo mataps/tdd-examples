@@ -115,26 +115,25 @@ describe('List', function() {
         });
     });
 
-    describe('#delete', function () {
-      it('should remove a list', function () {
-        req.body = {uuid: list.uuid};
-        listController.remove(req, res);
-
-        return promise
-          .then(function(response) {
-            expect(response.uuid).to.be(list.uuid);
-
-            return listRepository
-              .findOneByName(list.name)
-              .catch(function (error) {
-                expect(error).to.be.ok();
-              });
-          });
-      });
-    });
-
   });
 
+  describe('#delete', function () {
+    it('should remove a list', function () {
+      req.body = {uuid: list.uuid};
+      listController.remove(req, res);
+
+      return promise
+        .then(function(response) {
+          expect(response.uuid).to.be(list.uuid);
+
+          return listRepository
+            .findOneByName(list.name)
+            .catch(function (error) {
+              expect(error).to.be.a(Error);
+            });
+        });
+    });
+  });
 
   //
   // it('should add a todo to a list', function () {
