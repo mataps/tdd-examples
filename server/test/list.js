@@ -42,14 +42,6 @@ describe('List', function() {
       mysql.query('DELETE FROM todos')
     ]);
   });
-
-  // it('should return lists collection', function() {
-  //   listController.find(req, res);
-  //
-  //   return promise.then(function(response) {
-  //     expect(response).to.not.be.empty();
-  //   });
-  // });
   
   describe('#create', function () {
 
@@ -66,6 +58,7 @@ describe('List', function() {
       req.body = {name: 'foo'};
       listController.create(req, res);
       process.once("unhandledRejection", function(reason, promise) {
+        expect(reason).to.be.a(Error);
         done(); 
       });
     });
@@ -117,6 +110,30 @@ describe('List', function() {
 
   });
 
+
+  describe('#addTodo', function () {
+    it('should add a todo to a list', function () {
+      req.params = {
+        listId: list.uuid
+      }; 
+      req.body = {
+        text: 'bar'
+      };
+      todoController.create(req, res);
+
+      return promise.then(function (response) {
+        var todo = response;
+        return mysql
+          .query('SELECT * from todos WHERE uuid=?', todo.uuid)
+          .then(function (rows) {
+            expect(rows).to.not.be.empty();
+          });
+      });
+    });
+
+  });
+
+
   describe('#delete', function () {
     it('should remove a list', function () {
       req.body = {uuid: list.uuid};
@@ -136,27 +153,6 @@ describe('List', function() {
   });
 
   //
-  // it('should add a todo to a list', function () {
-  //   return listRepository
-  //     .findOneByName('foo')
-  //     .then(function (list) {
-  //       req.params = {
-  //         listId: list.uuid,
-  //         text: 'bar'
-  //       }; 
-  //       todoController.create(req, res);
-  //
-  //       return promise.then(function (response) {
-  //         expect(response.success).to.be.ok();
-  //
-  //           return mysql
-  //             .query('SELECT * from todos WHERE uuid=?', response.data.id)
-  //             .then(function (rows) {
-  //               expect(rows).to.not.be.empty();
-  //             });
-  //       });
-  //     });
-  // });
 
   // it('should mark a todo as done', function () {
   //   return listRepository

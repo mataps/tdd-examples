@@ -24,6 +24,7 @@ var listRepository = {
       .query('SELECT * FROM lists WHERE uuid=?', uuid)
       .get(0)
       .then(function(result) {
+        if (!result) throw new Error('List not found');
         return new List(result.uuid, result.name, result.completed, result.created_at);
       });
   },

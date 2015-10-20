@@ -12,12 +12,9 @@ var TodoController = {
         var todo = new Todo(uuid.v4(), req.params.text);
         list.addTodo(todo);
         listRepository
-          .save(list)
+          .update(list)
           .then(function () {
-            res.send({
-              success: true,
-              data: { id: todo.uuid }
-            });
+            res.send(todo);
           });
       });
   }
